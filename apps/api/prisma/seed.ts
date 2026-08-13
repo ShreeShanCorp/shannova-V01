@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding Full 90-Day PERN Curriculum (Levels 1 to 6 / 13 Weeks / 10 Projects)...");
 
-  // 1. Clean previous curriculum & task nodes to avoid duplicates
+  // 1. Clean previous database records
   await prisma.submission.deleteMany({});
   await prisma.task.deleteMany({});
   await prisma.class.deleteMany({});
@@ -16,12 +16,11 @@ async function main() {
   await prisma.module.deleteMany({});
   await prisma.cohort.deleteMany({});
   await prisma.curriculum.deleteMany({});
+  await prisma.user.deleteMany({});
 
   // 2. Seed Dedicated Test Accounts (1 for each Role)
-  const student = await prisma.user.upsert({
-    where: { email: "student@shannova.com" },
-    update: {},
-    create: {
+  const student = await prisma.user.create({
+    data: {
       id: "user-student-1",
       clerkId: "user_student_1",
       email: "student@shannova.com",
@@ -32,10 +31,8 @@ async function main() {
     },
   });
 
-  const instructor = await prisma.user.upsert({
-    where: { email: "instructor@shannova.com" },
-    update: {},
-    create: {
+  const instructor = await prisma.user.create({
+    data: {
       id: "user-instructor-1",
       clerkId: "user_instructor_1",
       email: "instructor@shannova.com",
@@ -46,10 +43,20 @@ async function main() {
     },
   });
 
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@shannova.com" },
-    update: {},
-    create: {
+  const admin = await prisma.user.create({
+    data: {
+      id: "user-admin-tech",
+      clerkId: "user_admin_tech",
+      email: "techadmin@shancorp.in",
+      firstName: "Shan",
+      lastName: "TechAdmin",
+      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      role: "ADMIN",
+    },
+  });
+
+  await prisma.user.create({
+    data: {
       id: "user-admin-1",
       clerkId: "user_admin_1",
       email: "admin@shannova.com",
