@@ -1,0 +1,22 @@
+{
+  "name": "shannova",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "postinstall": "pnpm --filter @shannova/shared-types run build",
+    "dev": "pnpm --parallel -r run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "dev:api": "pnpm --filter api run dev",
+    "dev:worker": "pnpm --filter worker run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "docker:up": "docker compose up -d postgres redis meilisearch",
+    "docker:down": "docker compose down"
+  }
+}

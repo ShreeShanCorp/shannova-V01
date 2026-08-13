@@ -1,0 +1,719 @@
+openapi: 3.0.3
+info:
+  title: Shannova API
+  version: 1.0.0
+  description: |
+    REST API for the Shannova platform. All authenticated routes require a
+    Clerk session JWT as a Bearer token. Every response body follows the
+    standard envelope `{ data, error, meta }`.
+servers:
+  - url: /api/v1
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Clerk session JWT
+
+  parameters:
+    id:
+      in: path
+      name: id
+      required: true
+      schema: { type: string }
+    page:
+      in: query
+      name: page
+      schema: { type: integer, default: 1 }
+    pageSize:
+      in: query
+      name: pageSize
+      schema: { type: integer, default: 20 }
+
+  schemas:
+    ApiMeta:
+      type: object
+      nullable: true
+      properties:
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+
+    ApiError:
+      type: object
+      nullable: true
+      properties:
+        message: { type: string }
+        code: { type: string }
+        details: {}
+
+    Role:
+      type: string
+      enum: [ADMIN, INSTRUCTOR, STUDENT, INTERVIEWER]
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        clerkId: { type: string }
+        email: { type: string, format: email }
+        firstName: { type: string, nullable: true }
+        lastName: { type: string, nullable: true }
+        avatarUrl: { type: string, nullable: true }
+        role: { $ref: "#/components/schemas/Role" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    UpdateUserRoleInput:
+      type: object
+      required: [role]
+      properties:
+        role: { $ref: "#/components/schemas/Role" }
+
+    CohortStatus:
+      type: string
+      enum: [UPCOMING, ACTIVE, COMPLETED, ARCHIVED]
+
+    Cohort:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        status: { $ref: "#/components/schemas/CohortStatus" }
+        startDate: { type: string, format: date-time }
+        endDate: { type: string, format: date-time }
+        curriculumId: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CohortInput:
+      type: object
+      required: [name, slug, startDate, endDate, curriculumId]
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        status: { $ref: "#/components/schemas/CohortStatus" }
+        startDate: { type: string, format: date-time }
+        endDate: { type: string, format: date-time }
+        curriculumId: { type: string }
+
+    Curriculum:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        version: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CurriculumInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+
+    Module:
+      type: object
+      properties:
+        id: { type: string }
+        curriculumId: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        order: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    ModuleInput:
+      type: object
+      required: [curriculumId, title]
+      properties:
+        curriculumId: { type: string }
+        title: { type: string }
+        description: { type: string }
+        order: { type: integer }
+
+    Week:
+      type: object
+      properties:
+        id: { type: string }
+        moduleId: { type: string }
+        title: { type: string }
+        order: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    WeekInput:
+      type: object
+      required: [moduleId, title]
+      properties:
+        moduleId: { type: string }
+        title: { type: string }
+        order: { type: integer }
+
+    Topic:
+      type: object
+      properties:
+        id: { type: string }
+        weekId: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        order: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    TopicInput:
+      type: object
+      required: [weekId, title]
+      properties:
+        weekId: { type: string }
+        title: { type: string }
+        description: { type: string }
+        order: { type: integer }
+
+    ResourceType:
+      type: string
+      enum: [VIDEO, ARTICLE, DOCUMENT, LINK, ASSIGNMENT]
+
+    Resource:
+      type: object
+      properties:
+        id: { type: string }
+        topicId: { type: string }
+        title: { type: string }
+        type: { $ref: "#/components/schemas/ResourceType" }
+        url: { type: string, nullable: true }
+        content: { type: string, nullable: true }
+        order: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    ResourceInput:
+      type: object
+      required: [topicId, title]
+      properties:
+        topicId: { type: string }
+        title: { type: string }
+        type: { $ref: "#/components/schemas/ResourceType" }
+        url: { type: string }
+        content: { type: string }
+        order: { type: integer }
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid session token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { nullable: true }
+              error: { $ref: "#/components/schemas/ApiError" }
+              meta: { $ref: "#/components/schemas/ApiMeta" }
+    Forbidden:
+      description: Authenticated but not permitted (RBAC)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { nullable: true }
+              error: { $ref: "#/components/schemas/ApiError" }
+              meta: { $ref: "#/components/schemas/ApiMeta" }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { nullable: true }
+              error: { $ref: "#/components/schemas/ApiError" }
+              meta: { $ref: "#/components/schemas/ApiMeta" }
+
+paths:
+  /health:
+    get:
+      summary: Liveness check
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: OK
+
+  /users/me:
+    get:
+      summary: Get the current authenticated user
+      tags: [Users]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/User" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /users:
+    get:
+      summary: List users (ADMIN only)
+      tags: [Users]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/User" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /users/{id}/role:
+    patch:
+      summary: Update a user's role (ADMIN only). Syncs Clerk publicMetadata.
+      tags: [Users]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateUserRoleInput" }
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/User" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /cohorts:
+    get:
+      summary: List cohorts
+      tags: [Cohorts]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of cohorts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Cohort" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a cohort (ADMIN only)
+      tags: [Cohorts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CohortInput" }
+      responses:
+        "201":
+          description: Created cohort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/Cohort" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /cohorts/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a cohort by id
+      tags: [Cohorts]
+      responses:
+        "200":
+          description: Cohort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/Cohort" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a cohort (ADMIN only)
+      tags: [Cohorts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CohortInput" }
+      responses:
+        "200":
+          description: Updated cohort
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a cohort (ADMIN only)
+      tags: [Cohorts]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /curricula:
+    get:
+      summary: List curricula
+      tags: [Curricula]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of curricula
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Curriculum" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a curriculum (ADMIN only)
+      tags: [Curricula]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CurriculumInput" }
+      responses:
+        "201":
+          description: Created curriculum
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /curricula/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a curriculum by id
+      tags: [Curricula]
+      responses:
+        "200":
+          description: Curriculum
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a curriculum (ADMIN only)
+      tags: [Curricula]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CurriculumInput" }
+      responses:
+        "200":
+          description: Updated curriculum
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a curriculum (ADMIN only)
+      tags: [Curricula]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /modules:
+    get:
+      summary: List modules
+      tags: [Curriculum Structure]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of modules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Module" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a module (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ModuleInput" }
+      responses:
+        "201":
+          description: Created module
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /modules/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a module by id
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Module
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a module (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ModuleInput" }
+      responses:
+        "200":
+          description: Updated module
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a module (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /weeks:
+    get:
+      summary: List weeks
+      tags: [Curriculum Structure]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of weeks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Week" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a week (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WeekInput" }
+      responses:
+        "201":
+          description: Created week
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /weeks/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a week by id
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Week
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a week (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WeekInput" }
+      responses:
+        "200":
+          description: Updated week
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a week (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /topics:
+    get:
+      summary: List topics
+      tags: [Curriculum Structure]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of topics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Topic" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a topic (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TopicInput" }
+      responses:
+        "201":
+          description: Created topic
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /topics/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a topic by id
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Topic
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a topic (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TopicInput" }
+      responses:
+        "200":
+          description: Updated topic
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a topic (ADMIN, INSTRUCTOR)
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /resources:
+    get:
+      summary: List resources
+      tags: [Curriculum Structure]
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Paginated list of resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Resource" }
+                  error: { nullable: true }
+                  meta: { $ref: "#/components/schemas/ApiMeta" }
+    post:
+      summary: Create a resource (ADMIN, INSTRUCTOR). Enqueues a Meilisearch sync job.
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResourceInput" }
+      responses:
+        "201":
+          description: Created resource
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /resources/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: Get a resource by id
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Resource
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      summary: Update a resource (ADMIN, INSTRUCTOR). Enqueues a Meilisearch sync job.
+      tags: [Curriculum Structure]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResourceInput" }
+      responses:
+        "200":
+          description: Updated resource
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a resource (ADMIN, INSTRUCTOR). Enqueues a Meilisearch delete job.
+      tags: [Curriculum Structure]
+      responses:
+        "200":
+          description: Deleted
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }

@@ -1,0 +1,424 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  avatarUrl String?
+  role      String   @default("STUDENT")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments             Enrollment[]
+  instructedClasses       Class[]             @relation("ClassInstructor")
+  attendance              Attendance[]
+  submissions             Submission[]
+  testAttempts            TestAttempt[]
+  interviewsAsInterviewer InterviewSlot[]     @relation("InterviewerSlots")
+  interviewsAsCandidate   InterviewSlot[]     @relation("CandidateSlots")
+  interviewFeedback       InterviewFeedback[]
+  projects                Project[]
+  chatThreads             ChatThread[]        @relation("ChatParticipants")
+  messages                Message[]
+  notifications           Notification[]
+  topicProgress           TopicProgress[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Cohort {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  status       String   @default("UPCOMING")
+  startDate    DateTime
+  endDate      DateTime
+  curriculumId String
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Restrict)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  enrollments    Enrollment[]
+  classes        Class[]
+  tasks          Task[]
+  mockTests      MockTest[]
+  interviewSlots InterviewSlot[]
+  projects       Project[]
+  chatThreads    ChatThread[]
+
+  @@index([curriculumId])
+  @@index([status])
+  @@map("cohorts")
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cohortId  String
+  cohort    Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  role      String   @default("STUDENT")
+  createdAt DateTime @default(now())
+
+  @@unique([userId, cohortId])
+  @@index([cohortId])
+  @@map("enrollments")
+}
+
+model Curriculum {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  version     String   @default("1.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules Module[]
+  cohorts Cohort[]
+
+  @@map("curricula")
+}
+
+model Module {
+  id           String     @id @default(cuid())
+  curriculumId String
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  order        Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  weeks Week[]
+
+  @@index([curriculumId])
+  @@map("modules")
+}
+
+model Week {
+  id        String   @id @default(cuid())
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topics Topic[]
+
+  @@index([moduleId])
+  @@map("weeks")
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  weekId      String
+  week        Week     @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  resources Resource[]
+  tasks     Task[]
+  progress  TopicProgress[]
+  classes   Class[]
+
+  @@index([weekId])
+  @@map("topics")
+}
+
+model TopicProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, topicId])
+  @@index([topicId])
+  @@map("topic_progress")
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  topicId   String
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title     String
+  type      String   @default("LINK")
+  url       String?
+  content   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topicId])
+  @@map("resources")
+}
+
+model Class {
+  id              String   @id @default(cuid())
+  cohortId        String
+  cohort          Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  instructorId    String
+  instructor      User     @relation("ClassInstructor", fields: [instructorId], references: [id], onDelete: Restrict)
+  topicId         String?
+  topic           Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  title           String
+  description     String?
+  status          String   @default("SCHEDULED")
+  startTime       DateTime
+  endTime         DateTime
+  meetingUrl      String?
+  calendarEventId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  attendance Attendance[]
+
+  @@index([cohortId])
+  @@index([instructorId])
+  @@index([topicId])
+  @@map("classes")
+}
+
+model Attendance {
+  id       String   @id @default(cuid())
+  classId  String
+  class    Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status   String   @default("ABSENT")
+  markedAt DateTime @default(now())
+
+  @@unique([classId, userId])
+  @@index([userId])
+  @@map("attendance")
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  cohortId    String
+  cohort      Cohort    @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  topicId     String?
+  topic       Topic?    @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  type        String    @default("ASSIGNMENT")
+  points      Int       @default(100)
+  rubric      String?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  submissions Submission[]
+
+  @@index([cohortId])
+  @@index([topicId])
+  @@map("tasks")
+}
+
+model Submission {
+  id          String    @id @default(cuid())
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String    @default("PENDING")
+  content     String?
+  fileUrl     String?
+  grade       Int?
+  feedback    String?
+  submittedAt DateTime?
+  gradedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([taskId, userId])
+  @@index([userId])
+  @@map("submissions")
+}
+
+model MockTest {
+  id              String   @id @default(cuid())
+  cohortId        String
+  cohort          Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?
+  durationMinutes Int      @default(60)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  questions Question[]
+  attempts  TestAttempt[]
+
+  @@index([cohortId])
+  @@map("mock_tests")
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  mockTestId    String
+  mockTest      MockTest @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+  type          String   @default("MULTIPLE_CHOICE")
+  prompt        String
+  options       String?
+  correctAnswer String?
+  points        Int      @default(1)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([mockTestId])
+  @@map("questions")
+}
+
+model TestAttempt {
+  id          String    @id @default(cuid())
+  mockTestId  String
+  mockTest    MockTest  @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String    @default("IN_PROGRESS")
+  answers     String?
+  score       Int?
+  startedAt   DateTime  @default(now())
+  submittedAt DateTime?
+
+  @@index([mockTestId])
+  @@index([userId])
+  @@map("test_attempts")
+}
+
+model InterviewSlot {
+  id              String   @id @default(cuid())
+  cohortId        String
+  cohort          Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  interviewerId   String
+  interviewer     User     @relation("InterviewerSlots", fields: [interviewerId], references: [id], onDelete: Restrict)
+  candidateId     String?
+  candidate       User?    @relation("CandidateSlots", fields: [candidateId], references: [id], onDelete: SetNull)
+  status          String   @default("SCHEDULED")
+  scheduledAt     DateTime
+  durationMinutes Int      @default(45)
+  meetingUrl      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  feedback InterviewFeedback[]
+
+  @@index([cohortId])
+  @@index([interviewerId])
+  @@index([candidateId])
+  @@map("interview_slots")
+}
+
+model InterviewFeedback {
+  id              String        @id @default(cuid())
+  interviewSlotId String
+  interviewSlot   InterviewSlot @relation(fields: [interviewSlotId], references: [id], onDelete: Cascade)
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  rating          Int
+  strengths       String?
+  weaknesses      String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+
+  @@index([interviewSlotId])
+  @@map("interview_feedback")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  cohortId    String
+  cohort      Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String   @default("NOT_STARTED")
+  repoUrl     String?
+  liveUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  milestones Milestone[]
+
+  @@index([cohortId])
+  @@index([ownerId])
+  @@map("projects")
+}
+
+model Milestone {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String    @default("PENDING")
+  dueDate     DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([projectId])
+  @@map("milestones")
+}
+
+model ChatThread {
+  id        String   @id @default(cuid())
+  cohortId  String?
+  cohort    Cohort?  @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  type      String   @default("DIRECT")
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages     Message[]
+  participants User[]    @relation("ChatParticipants")
+
+  @@index([cohortId])
+  @@map("chat_threads")
+}
+
+model Message {
+  id        String     @id @default(cuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime   @default(now())
+
+  @@index([threadId])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   @default("INFO")
+  title     String
+  body      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}

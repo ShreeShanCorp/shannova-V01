@@ -1,0 +1,794 @@
+
+FULL-STACK DEVELOPER TRAINING PROGRAM
+Finalized Curriculum
+Field
+Detail
+Prepared for
+Shan Nova — under Shan Enterprises
+Technology Stack
+PERN + TypeScript (REST API only)
+Duration
+90 Days / 13 Weeks
+Learning Model
+30% Theory + 70% Practical
+Daily Commitment
+1.5 Hours (90 minutes)
+Primary Goal
+Job-ready Full-Stack Developer
+
+1. Program Objective
+Build responsive websites from scratch
+Write clean JavaScript and TypeScript
+Build REST APIs using Node.js and Express.js
+Work with PostgreSQL databases
+Use Sequelize ORM
+Build React applications
+Connect React frontend with backend APIs
+Implement authentication and authorization
+Build admin dashboards
+Handle forms and validation
+Upload and manage files
+Use Redis for caching
+Write automated tests
+Use Git and GitHub professionally
+Deploy full-stack applications
+Understand production backend architecture
+Explain technical concepts in interviews
+Build a complete production-style application
+2. Technology Stack
+Frontend
+HTML5
+CSS3
+JavaScript ES6+
+TypeScript
+React
+Vite
+React Router
+TanStack Query
+Zustand
+React Hook Form
+Zod
+Tailwind CSS
+Shadcn UI
+Lucide Icons
+Backend
+Node.js LTS
+Express.js
+Fastify basics
+REST API architecture
+TypeScript
+JWT
+bcrypt
+Zod / Joi
+Database
+PostgreSQL
+Sequelize ORM
+SQL
+Database relationships
+Transactions
+Indexing
+Additional Backend
+Redis
+WebSockets / Socket.IO
+File uploads
+Streams
+EventEmitter
+Rate limiting
+CORS
+Helmet
+Tools
+VS Code
+Git
+GitHub
+Postman
+DBeaver
+npm
+Docker basics
+GitHub Actions
+Google Cloud / gcloud
+3. Daily Learning Method — 1.5 Hours (30% Theory / 70% Practical)
+Phase
+Duration
+Share
+What happens
+1. Learn (Theory)
+27 min
+30%
+What it is, why it exists, how it works, when to use it, real backend/frontend examples
+2. Build (Practical)
+35 min
+
+Write code immediately, hands-on with the day&apos;s topic
+3. Practice (Practical)
+18 min
+
+Complete a small independent task
+4. Assessment (Practical)
+7 min
+
+3 MCQs + 1 quick coding check + previous-day recall
+5. Git (Practical)
+3 min
+
+git status → add → commit → push
+4. Project Progression
+Project
+Main Skills
+Project 1
+HTML/CSS Portfolio
+Project 2
+JavaScript Task Manager
+Project 3
+TypeScript CLI/Application
+Project 4
+React Product Dashboard
+Project 5
+REST API
+Project 6
+Authentication System
+Project 7
+PostgreSQL Backend
+Project 8
+React + API Application
+Project 9
+Real-Time Application
+Project 10
+Admin Dashboard
+Capstone
+Complete Full-Stack SaaS (REST-based)
+
+LEVEL 1 — WEB &amp; PROGRAMMING FOUNDATIONS
+WEEK 1 — HTML + CSS
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+1
+HTML Fundamentals
+What is HTML, how browsers read HTML, document structure, DOCTYPE, html/head/body, headings, paragraphs, br, hr
+Build: Personal Profile Page
+2
+HTML Content
+Text formatting: strong, emphasis, mark, small, sup, sub, blockquote, code
+Build: About Me Page
+3
+Links, Images &amp; Media
+Anchor tags, relative/absolute paths, images, alt text, audio, video
+Build: Simple Product Page
+4
+Lists, Tables &amp; Forms
+ul/ol/li, table/tr/th/td, rowspan/colspan, forms, input, select, textarea, button
+Build: Student Registration Form
+5
+Semantic HTML
+header, nav, main, section, article, aside, footer, figure/figcaption, accessibility basics
+Build: Semantic Blog Page
+Weekend Project — Personal Portfolio Website
+Header, Navigation, About, Skills, Projects, Contact form, Footer
+Fully responsive layout
+WEEK 2 — CSS + RESPONSIVE DESIGN
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+6
+CSS Fundamentals
+CSS syntax, selectors, colors, fonts, backgrounds, borders
+Style the Week 1 portfolio
+7
+CSS Box Model
+Margin, padding, border, content, width/height, box-sizing
+Build: Card Components
+8
+Flexbox
+display, flex-direction, justify-content, align-items, gap, flex-wrap, flex-grow/shrink
+Build: Responsive Navbar + Cards
+9
+CSS Grid
+Grid columns/rows, gap, grid-template-areas, responsive grids
+Build: Product Grid
+10
+Responsive Design
+Media queries, mobile-first design, px/%/rem/em/vh/vw, DevTools
+Convert previous projects to fully responsive
+Weekend Project — Responsive Business Website (Shan Nova)
+Pages: Home, About, Services, Courses, Contact
+Fully responsive, mobile-first build
+LEVEL — JAVASCRIPT FOUNDATIONS
+WEEK 3 — JAVASCRIPT FOUNDATIONS
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+11
+JavaScript Basics
+let/const/var, data types, operators, type conversion, template literals
+Build: Simple Calculator
+12
+Conditions
+if/else/else if/switch, &amp;&amp;, ||, !, ternary operator
+Build: Grade Calculator
+13
+Loops
+for, while, do-while, for-of, for-in, break/continue
+Build: Number Analysis Program
+14
+Functions
+Declarations, expressions, arrow functions, parameters, return, scope, default parameters
+Build: Utility Functions Library
+15
+Arrays
+map, filter, reduce, find, some, includes, slice, splice
+Build: Product Filtering System
+WEEK 4 — MODERN JAVASCRIPT
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+16
+Objects
+Objects, nested objects, object methods, Object.keys/values/entries
+Build: Student Management Data
+17
+Modern JavaScript
+Destructuring, spread, rest, optional chaining, nullish coalescing
+Refactor earlier JS projects
+18
+Map, Set &amp; Advanced Data
+Map, Set, WeakMap, WeakSet
+Build: Unique User/Data Processor
+19
+Modules
+import/export, require, module.exports, CommonJS vs ES Modules
+Split an app into modules
+20
+JSON &amp; API Data
+JSON, JSON.stringify/parse, API responses, API errors
+Build: JSON-based Product Manager
+Weekend Project — JavaScript Task Management App
+Add / edit / delete / complete tasks
+Filter and search tasks
+LocalStorage persistence with JSON data
+LEVEL 2 — TYPESCRIPT
+WEEK 5 — TYPESCRIPT
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+21
+TypeScript Basics
+Why TypeScript, TS vs JS, string/number/boolean, arrays, tuples, any/unknown/never
+Convert JS utilities to TypeScript
+22
+Functions &amp; Objects
+Function types, optional/default parameters, object types, type aliases
+Build: Typed User Management
+23
+Interfaces
+interface vs type, optional properties, readonly, nested interfaces
+Create: Product / User / Order models
+24
+Advanced Types
+Union, intersection, literal types, enums, generics
+Create reusable generic functions
+25
+TypeScript Project Setup
+tsconfig, type checking, npm scripts, strict mode, type-safe architecture
+Set up a professional TS project
+Weekend Project — TypeScript Inventory System
+Products, categories, users, stock
+Search and filtering
+Fully type-safe data handling
+LEVEL 3 — NODE.JS BACKEND
+WEEK 6 — NODE.JS CORE
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+26
+What is Node.js?
+Node runtime, V8 engine, single-threaded architecture, non-blocking I/O, event-driven model, npm, package.json  |  Interview: Why Node.js? Why is it popular? Node vs traditional backend servers?
+Create your first Node server
+27
+Event Loop
+Call stack, event loop, callback queue, microtask queue, macrotasks, async execution  |  Interview: How does Node.js handle multiple requests?
+Write programs to observe execution order
+28
+Callbacks, Promises &amp; Async/Await
+Callbacks, callback hell, promises, promise chaining, Promise.all/race, async/await, try/catch
+Build: Async User Service
+29
+Node Modules
+CommonJS, ES Modules, import/export, require, module.exports, package management
+Build a modular Node application
+30
+File System, Path &amp; Process
+fs, readFile/writeFile, streams basics, path, process, process.env
+Build: File-based Logger
+Weekend Project — Node.js File Management API
+Upload / read / create / delete files
+File metadata and logging
+Environment configuration
+WEEK 7 — EXPRESS + REST API
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+31
+Express.js
+Server, routing, request/response, JSON, HTTP methods
+Build: Basic REST API
+32
+Middleware
+Middleware, request lifecycle, custom middleware, logger middleware, auth middleware
+Build: Request Logger
+33
+REST API
+GET/POST/PUT/PATCH/DELETE, CRUD, HTTP status codes
+Build: Products API
+34
+API Error Handling
+try/catch, error objects, custom errors, global error middleware, async error handling
+Create production-style error responses
+35
+API Validation
+Why validation matters, Joi, Zod, request body/query/param validation
+Validate: User Registration API
+Weekend Project — REST Product Management API
+Full CRUD with validation and error handling
+Filtering, searching, pagination
+Middleware stack
+Complete Postman collection
+WEEK 8 — POSTGRESQL + SEQUELIZE
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+36
+SQL Fundamentals
+Database, table, row, column, primary key, foreign key, constraints
+Create: Student Database
+37
+SQL CRUD
+SELECT/INSERT/UPDATE/DELETE, WHERE, ORDER BY, LIMIT
+Build SQL queries
+38
+Relationships
+One-to-one, one-to-many, many-to-many, foreign keys, JOIN
+Create: User → Orders → Products database
+39
+Sequelize
+Sequelize setup, models, migrations, associations, queries, hooks
+Convert SQL models to Sequelize
+40
+Production Database Concepts
+Indexes, transactions, pagination, query optimization, connection pooling, database security
+Optimize an existing API&apos;s queries
+Weekend Project — E-Commerce Backend
+Users, Products, Categories, Orders, Order items
+Full database relationships
+REST APIs on top of the schema
+LEVEL 4 — AUTHENTICATION &amp; ADVANCED REST
+WEEK 9 — AUTH &amp; ADVANCED REST API
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+41
+Authentication
+Authentication vs authorization, password hashing, bcrypt, login, registration
+Build: Register/Login API
+42
+JWT
+JWT structure, access tokens, token verification, protected routes, token expiration
+Build: JWT Authentication System
+43
+Role-Based Access
+Roles, permissions, admin vs user, protected APIs
+Build: Admin/User authorization
+44
+API Documentation &amp; Advanced REST Patterns
+Swagger/OpenAPI basics, API versioning, nested resources, filtering/sorting/pagination standards
+Document the Products API with Swagger; add versioning
+45
+Caching, Rate Limiting &amp; REST Best Practices
+HTTP caching headers, ETags, rate-limiting middleware, REST maturity model, idempotency
+Add caching headers and rate limiting to the REST API
+Weekend Project — Secure REST Backend
+Registration, Login, JWT, Roles
+PostgreSQL + Sequelize
+REST API with validation and error handling
+API documentation (Swagger/Postman)
+LEVEL 5 — REACT FRONTEND
+WEEK 10 — REACT FUNDAMENTALS
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+46
+React Fundamentals
+What/why React, Vite, JSX, components, Virtual DOM
+Build: Profile App
+47
+Components &amp; Props
+Components, props, children, named vs default exports
+Build: Reusable Card System
+48
+State &amp; Events
+useState, events, forms, conditional rendering
+Build: Todo Application
+49
+Lists &amp; Forms
+map + key, dynamic rendering, controlled inputs, form submission
+Build: Student Management UI
+50
+useEffect &amp; API Calls
+Side effects, useEffect, dependency array, cleanup, fetch, Axios, loading/error states
+Connect React to a public API
+Weekend Project — React Product Dashboard
+Product list with search and filter
+Add / edit / delete product
+API integration with loading and error states
+WEEK 11 — PROFESSIONAL REACT
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+51
+React Router
+Routes, Route, Link, NavLink, dynamic routes, useNavigate, useParams
+Build: Multi-page Dashboard
+52
+Context &amp; Global State
+Context, Provider, useContext, prop drilling
+Build: Theme + User Context
+53
+TanStack Query
+Queries, mutations, caching, refetching, loading/error states
+Replace manual API state handling
+54
+Forms + Validation
+React Hook Form, Zod, controlled/uncontrolled forms, validation and error messages
+Build: Professional Registration Form
+55
+Zustand + Application State
+Store, state, actions, selectors, global state
+Build: Shopping Cart
+LEVEL 6 — FULL-STACK INTEGRATION
+WEEK 12 — FULL-STACK INTEGRATION
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+56
+React + Node Integration
+Frontend/backend communication, REST API, Axios, CORS, environment variables
+Connect React to your backend
+57
+Full Authentication
+End-to-end auth flow design
+Build: Register, Login, Logout, JWT, protected routes, user profile
+58
+Admin Dashboard
+Dashboard/data patterns, role-based UI
+Build: Dashboard with users, products, orders, statistics
+59
+File Upload
+Multipart forms, file upload, file validation, storage, streams, buffers
+Build: Profile Image Upload
+60
+Complete Mini Full-Stack Application
+Architecture review of everything so far
+Build: Mini E-Commerce Application (frontend + backend + database)
+LEVEL 7 — ADVANCED BACKEND
+WEEK 13 — ADVANCED BACKEND
+Day
+Topic
+Learn (Theory ~27 min)
+Build &amp; Practice (Practical ~63 min)
+61
+Streams &amp; Buffers
+Readable/writable streams, buffer, pipe, memory efficiency
+Process a large file without loading it fully into memory
+62
+Redis &amp; Caching
+What is caching, Redis, cache hit/miss, TTL, invalidation
+Cache: Product API
+63
+EventEmitter
+Events, EventEmitter, custom events, listeners
+Build: Notification Event System
+64
+Security
+Helmet, CORS, rate limiting, password security, input validation, secure headers, API security
+Run a security audit on your API
+65
+Scaling Node.js
+Node clustering, PM2, load balancing, stateless APIs, horizontal scaling, environment configuration  |  Interview: How would you scale a Node.js application?
+Configure clustering/PM2 for an existing API
+
+5. Testing
+Testing Module
+Authentication
+Users
+Products
+Orders
+API errors
+6. WebSockets &amp; Real-Time Applications
+Login
+Online users
+Send message
+Receive message
+Rooms
+Notifications
+7. Node.js Project Architecture
+src/ → controllers/ · services/ · repositories/ · models/ · routes/ · middleware/ · validators/ · utils/ · config/ · types/ · app.ts
+8. Frontend Architecture
+src/ → components/ · pages/ · layouts/ · hooks/ · services/ · api/ · stores/ · types/ · schemas/ · utils/ · routes/
+9. Git &amp; GitHub
+git init
+git clone
+git status
+git add
+git commit
+git push
+git pull
+git branch
+git checkout / switch
+merge &amp; rebase basics
+conflict resolution
+.gitignore
+README
+GitHub Issues
+Pull Requests
+10. Postman API Testing
+Collections
+Environments
+Variables
+GET / POST / PUT / PATCH / DELETE
+Headers
+Authorization
+JSON body
+Tests
+11. Deployment &amp; DevOps Basics
+Frontend
+Build process
+Environment variables
+Production build
+Hosting
+Backend
+Environment variables
+Production server
+Logging
+Process management
+Database
+PostgreSQL production database
+Connection strings
+Migrations
+Backups basics
+CI/CD
+GitHub Actions
+Automated testing
+Automated deployment
+Cloud
+Google Cloud basics
+gcloud CLI basics
+Cloud deployment concepts
+
+12. Capstone Project — Production-Style Full-Stack SaaS
+Suggested Product
+Capstone Features
+Authentication
+Registration
+Login
+Logout
+JWT
+Password hashing
+Role-based access
+User Management
+User profile
+Admin users
+User roles
+Account status
+Product Management
+Add / edit / delete product
+Product image
+Categories
+Search
+Filtering
+Pagination
+Stock
+Cart
+Add / remove product
+Quantity
+Total calculation
+Orders
+Create order
+Order items
+Order status
+Order history
+Admin order management
+Dashboard
+Revenue
+Orders
+Users
+Products
+Statistics
+Backend
+Node.js
+Express
+TypeScript
+REST API
+PostgreSQL
+Sequelize
+Redis
+JWT
+Frontend
+React
+TypeScript
+Vite
+Tailwind
+React Router
+TanStack Query
+Zustand
+React Hook Form
+Zod
+Security
+Validation
+CORS
+Helmet
+Rate limiting
+Secure authentication
+Error handling
+Testing
+Unit tests
+Integration tests
+API tests
+Deployment
+GitHub
+Frontend deployment
+Backend deployment
+PostgreSQL production database
+Environment configuration
+CI/CD
+13. Capstone Development Phases
+Phase
+Deliverables
+Phase 1 — Requirements
+Problem statement, user roles, features, functional requirements
+Phase 2 — UI/UX
+Wireframes, page structure, navigation, responsive layouts
+Phase 3 — Database
+ER diagram, tables, relationships, constraints, indexes
+Phase 4 — Backend
+Server, database, models, REST APIs, authentication, authorization, validation, error handling
+Phase 5 — Frontend
+Pages, components, forms, state management, API integration
+Phase 6 — Integration
+React → REST API → Node.js → Sequelize → PostgreSQL
+Phase 7 — Testing
+Frontend, backend, APIs, authentication, database, edge cases
+Phase 8 — Deployment
+Frontend, backend, database, storage
+Phase 9 — Documentation
+README, API documentation, database documentation, setup instructions, environment variables documentation, architecture diagram
+
+14. Interview Preparation
+JavaScript
+var vs let vs const
+== vs ===
+map vs filter vs reduce
+closure
+scope
+hoisting
+promises
+async/await
+event loop
+Node.js
+What is Node.js?
+Why is Node single-threaded?
+How does the event loop work?
+How does Node handle concurrent requests?
+What is middleware?
+How do you handle errors?
+How do you scale Node?
+React
+What is React?
+What is JSX?
+What is the Virtual DOM?
+Props vs state
+useState
+useEffect
+Context
+React Query
+Component lifecycle
+Performance optimization
+Database
+SQL vs NoSQL
+Primary key
+Foreign key
+JOIN
+Index
+Transaction
+Normalization
+Sequelize associations
+API
+REST principles
+HTTP methods
+PUT vs PATCH
+Status codes
+Authentication vs authorization
+JWT
+CORS
+Rate limiting
+API versioning
+Caching strategies
+15. Weekly Assessment System
+Area
+Weight
+Concept Understanding
+20%
+Coding
+25%
+Project
+30%
+Debugging
+10%
+Git/GitHub
+5%
+Interview Explanation
+10%
+16. Monthly Milestones
+Month 1 — Foundation Developer
+Build HTML/CSS websites
+Write JavaScript
+Understand TypeScript
+Use Git
+Build small applications
+Month 2 — Backend + Frontend Developer
+Build REST APIs
+Work with PostgreSQL
+Use Sequelize
+Build authentication
+Build React applications
+Connect frontend and backend
+Month 3 — Full-Stack Developer
+Build production-style REST APIs
+Use Redis
+Build real-time applications
+Test applications
+Deploy applications
+Understand architecture
+Build a complete SaaS product
+
+17. Final 90-Day Outcome
+Knowledge
+HTML
+CSS
+JavaScript
+TypeScript
+React
+Node.js
+Express
+Fastify basics
+REST
+PostgreSQL
+Sequelize
+Redis
+Authentication
+Security
+Testing
+Deployment
+Practical Portfolio
+Major Project
+GitHub
+Professional repositories
+README files
+Meaningful commits
+Project documentation
+Deployment
+At least 3 deployed mini projects
+1 deployed full-stack capstone
+Interview
+18. Simple Learning Rule
+LEARN → UNDERSTAND → CODE → BREAK IT → DEBUG IT → BUILD SOMETHING → EXPLAIN IT → USE IT IN PROJECT
