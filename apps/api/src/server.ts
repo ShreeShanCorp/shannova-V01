@@ -10,7 +10,7 @@ const httpServer = createServer(app);
 initSocket(httpServer);
 startClassReminderWorker();
 
-httpServer.listen(env.PORT, () => {
-  console.log(`api listening on http://localhost:${env.PORT}`);
+httpServer.listen(env.PORT, "0.0.0.0", () => {
+  console.log(`api listening on http://0.0.0.0:${env.PORT}`);
   console.log(`swagger docs at http://localhost:${env.PORT}/api/docs`);
 });

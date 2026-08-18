@@ -60,6 +60,17 @@ export const register = asyncHandler(async (req, res) => {
     },
   });
 
+  // Auto-enroll user into default active cohort if one exists
+  const activeCohort = await prisma.cohort.findFirst({ where: { status: "ACTIVE" } }) 
+    || await prisma.cohort.findFirst();
+  if (activeCohort) {
+    await prisma.enrollment.upsert({
+      where: { userId_cohortId: { userId: user.id, cohortId: activeCohort.id } },
+      create: { userId: user.id, cohortId: activeCohort.id, role: user.role },
+      update: {},
+    });
+  }
+
   const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Learner";
 
   // 1. Send Welcome Email to the registered user
@@ -79,21 +90,11 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, role } = loginSchema.parse(req.body);
+  const { email } = loginSchema.parse(req.body);
 
-  let user = await prisma.user.findUnique({ where: { email } });
-  let isNewUser = false;
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    isNewUser = true;
-    user = await prisma.user.create({
-      data: {
-        clerkId: `jwt_${Date.now()}`,
-        email,
-        firstName: email.split("@")[0] || "Learner",
-        lastName: "",
-        role: role || "STUDENT",
-      },
-    });
+    throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
   }
 
   const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Learner";
@@ -117,18 +118,22 @@ export const login = asyncHandler(async (req, res) => {
 export const sendOtp = asyncHandler(async (req, res) => {
   const { email } = sendOtpSchema.parse(req.body);
 
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (!existingUser) {
+    throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
+  }
+
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   otpStore.set(email.toLowerCase(), { code, expiresAt });
 
   // Send real email via configured Gmail
-  const sent = await sendOtpEmail(email, code);
+  await sendOtpEmail(email, code, existingUser.firstName || "Learner");
 
   return sendSuccess(res, {
-    message: sent ? "OTP sent to your email address." : "OTP generated (preview mode).",
+    message: "Verification code sent to your email address.",
     email,
-    previewCode: process.env.NODE_ENV === "development" ? code : undefined,
   });
 });
 
@@ -142,17 +147,9 @@ export const verifyOtp = asyncHandler(async (req, res) => {
 
   otpStore.delete(email.toLowerCase());
 
-  let user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    user = await prisma.user.create({
-      data: {
-        clerkId: `jwt_otp_${Date.now()}`,
-        email,
-        firstName: email.split("@")[0] || "Student",
-        lastName: "",
-        role: "STUDENT",
-      },
-    });
+    throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
   }
 
   const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Learner";

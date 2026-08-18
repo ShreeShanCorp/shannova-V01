@@ -110,7 +110,7 @@ The Student portal navigation contains **ONLY** student tools:
    - Create new bootcamp cohorts and set start/end dates.
    - Build and restructure Modules, Weeks, and Topics.
 4. **Direct Database GUI (DBeaver & Prisma Studio)**:
-   - Connect via **DBeaver** on `localhost:5432` (`kickstart`) or run:
+   - Connect via **DBeaver** on `localhost:5434` (`shannova`) or run:
      ```powershell
      cd "d:\SHAN PROJECTS\shannova_version01\apps\api"
      npx prisma studio

@@ -1,6 +1,7 @@
 import { scheduleClassSchema } from "@shannova/shared-types";
 import { asyncHandler } from "../lib/async-handler.js";
 import { scheduleClassReminder } from "../lib/class-reminder-queue.js";
+import { sendClassMeetingEmail } from "../lib/email.js";
 import { createMeetEvent } from "../lib/google-calendar.js";
 import { prisma } from "../lib/prisma.js";
 import { ApiError, sendSuccess } from "../lib/response.js";
@@ -12,7 +13,7 @@ export const createClass = asyncHandler(async (req, res) => {
 
   const enrollments = await prisma.enrollment.findMany({
     where: { cohortId: data.cohortId },
-    include: { user: { select: { id: true, email: true } } },
+    include: { user: { select: { id: true, email: true, firstName: true, lastName: true } } },
   });
 
   const instructor = await prisma.user.findUnique({ where: { id: instructorId } });
@@ -28,6 +29,9 @@ export const createClass = asyncHandler(async (req, res) => {
     attendeeEmails,
   });
 
+  const finalMeetingUrl = data.meetingUrl || meetEvent?.meetUrl || "https://meet.jit.si/shannova-pern-masterclass";
+  const instructorName = `${instructor.firstName || ""} ${instructor.lastName || ""}`.trim() || instructor.email;
+
   const cls = await prisma.class.create({
     data: {
       cohortId: data.cohortId,
@@ -37,7 +41,7 @@ export const createClass = asyncHandler(async (req, res) => {
       description: data.description,
       startTime: data.startTime,
       endTime: data.endTime,
-      meetingUrl: meetEvent?.meetUrl ?? null,
+      meetingUrl: finalMeetingUrl,
       calendarEventId: meetEvent?.eventId ?? null,
     },
   });
@@ -46,6 +50,22 @@ export const createClass = asyncHandler(async (req, res) => {
     await prisma.attendance.createMany({
       data: enrollments.map((e) => ({ classId: cls.id, userId: e.userId })),
     });
+
+    // Send email notifications with Google Meet link asynchronously
+    Promise.allSettled(
+      enrollments.map((e) => {
+        const studentName = `${e.user.firstName || ""} ${e.user.lastName || ""}`.trim() || e.user.email;
+        return sendClassMeetingEmail(
+          e.user.email,
+          studentName,
+          cls.title,
+          cls.description || "",
+          cls.startTime,
+          instructorName,
+          finalMeetingUrl
+        );
+      })
+    ).catch((err) => console.error("[Class Email Error]:", err));
   }
 
   await scheduleClassReminder(cls.id, cls.startTime);

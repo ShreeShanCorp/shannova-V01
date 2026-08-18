@@ -11,23 +11,28 @@ import type { Role } from "@/types/api";
  */
 export function RoleGuard({ allow }: { allow: Role[] }) {
   const role = useRole();
-  const { data: user, isLoading } = useCurrentUser();
   const navigate = useNavigate();
 
+  const token = typeof window !== "undefined"
+    ? (localStorage.getItem("shannova_token") || localStorage.getItem("kickstart_token"))
+    : null;
+
   useEffect(() => {
-    const token = localStorage.getItem("kickstart_token");
-    
-    // If not authenticated and no role selected, redirect to sign-in
-    if (!token && !role) {
+    // 1. Strictly require authentication token
+    if (!token) {
       void navigate({ to: "/sign-in" });
       return;
     }
 
-    // If role is selected but not allowed for this route, redirect to unauthorized
+    // 2. Enforce role permissions
     if (role && !allow.includes(role)) {
       void navigate({ to: "/unauthorized" });
     }
-  }, [role, allow, navigate]);
+  }, [token, role, allow, navigate]);
+
+  if (!token) {
+    return null;
+  }
 
   if (!role || !allow.includes(role)) {
     return null;

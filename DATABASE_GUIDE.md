@@ -13,12 +13,12 @@
 | **Driver Name** | PostgreSQL |
 | **Connect by** | Host |
 | **Host** | `localhost` |
-| **Port** | `5432` |
-| **Database** | `kickstart` |
+| **Port** | `5434` (or `5432`) |
+| **Database** | `shannova` |
 | **Authentication** | Database Native |
-| **Username** | `postgres` |
-| **Password** | `postgres` (or your local postgres password) |
-| **Connection URL** | `postgresql://postgres:postgres@localhost:5432/kickstart?schema=public` |
+| **Username** | `shannova` (or `postgres`) |
+| **Password** | `shannova` (or `postgres`) |
+| **Connection URL** | `postgresql://shannova:shannova@localhost:5434/shannova?schema=public` |
 
 ### B. Production PostgreSQL Database (Google Cloud)
 | Parameter | Value |
@@ -27,12 +27,12 @@
 | **Connect by** | Host |
 | **Host** | `34.134.174.129` |
 | **Port** | `5432` |
-| **Database** | `postgres` |
+| **Database** | `shannova` |
 | **Authentication** | Database Native |
 | **Username** | `postgres` |
 | **Password** | `Dd*XxJ4Adrmeshal@2025` |
 | **SSL Mode** | `prefer` (or `require`) |
-| **Connection URL** | `postgresql://postgres:Dd*XxJ4Adrmeshal@2025@34.134.174.129:5432/postgres?schema=public&sslmode=prefer` |
+| **Connection URL** | `postgresql://postgres:Dd*XxJ4Adrmeshal@2025@34.134.174.129:5432/shannova?schema=public&sslmode=prefer` |
 
 ---
 
@@ -48,18 +48,18 @@
 ### Step 3: Enter Connection Details
 * **Connect by**: `Host`
 * **Host**: `localhost`
-* **Port**: `5432`
-* **Database**: `kickstart`
+* **Port**: `5434`
+* **Database**: `shannova`
 * **Authentication**: `Database Native`
-* **Username**: `postgres`
-* **Password**: `postgres` (Check `Save password`)
+* **Username**: `shannova`
+* **Password**: `shannova` (Check `Save password`)
 
 ### Step 4: Test & Finish
 1. Click **Test Connection...** in the bottom left.
 2. Once connected, click **Finish**.
 
 ### Step 5: Browse Tables in DBeaver
-1. Expand `kickstart` ➔ `Schemas` ➔ `public` ➔ `Tables`.
+1. Expand `shannova` ➔ `Schemas` ➔ `public` ➔ `Tables`.
 2. You can view all live tables:
    - `users`: Student (`student@shannova.com`), Instructor (`instructor@shannova.com`), Admin (`admin@shannova.com`).
    - `cohorts`: 90-Day Full-Stack PERN Alpha Cohort.

@@ -21,7 +21,8 @@ import {
   ChevronDown,
   User,
   LogOut,
-  FolderGit2
+  FolderGit2,
+  Sparkles
 } from "lucide-react";
 
 type LinkToProp = ComponentProps<typeof Link>["to"];
@@ -94,6 +95,7 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
   }
 
   const handleSignOut = () => {
+    localStorage.removeItem("shannova_token");
     localStorage.removeItem("kickstart_token");
     setDropdownOpen(false);
     navigate({ to: "/sign-in" });
@@ -103,49 +105,57 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl transition-all dark:border-white/10 dark:bg-slate-950/80">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         
-        {/* Brand Logo: Shan Nova */}
+        {/* Brand Logo & Tagline */}
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-600 shadow-md shadow-indigo-500/25">
-              <Rocket className="size-5 text-white" />
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-violet-600 text-white shadow-md shadow-indigo-500/20">
+              <Sparkles className="size-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                Shan Nova
-              </span>
-              <span className="text-[9px] font-semibold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase -mt-1">
-                From Campus to Career
-              </span>
+            <div>
+              <div className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+                Shan<span className="text-indigo-600 dark:text-indigo-400">Nova</span>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                LMS Platform
+              </div>
             </div>
           </Link>
 
-          {/* Role-Isolated Nav Links */}
-          {roleNav.length > 0 && (
-            <nav className="hidden items-center gap-1 md:flex">
-              {roleNav.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  activeOptions={item.exact ? { exact: true } : undefined}
-                  className="rounded-lg px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 data-[status=active]:bg-indigo-50 data-[status=active]:text-indigo-600 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white dark:data-[status=active]:bg-indigo-950/60 dark:data-[status=active]:text-indigo-400"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+          {/* Dynamic Role Badges */}
+          {activeRole && (
+            <span className="hidden items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50/80 px-2.5 py-1 text-[11px] font-bold text-indigo-700 sm:inline-flex dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300">
+              <span className="size-1.5 rounded-full bg-indigo-600 animate-pulse" />
+              {activeRole} MODE
+            </span>
           )}
         </div>
 
-        {/* Right Side: Theme Toggle & Sign In / Account Dropdown */}
+        {/* Dynamic Navigation Links */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {roleNav.map((item) => (
+            <Link
+              key={typeof item.to === "string" ? item.to : item.label}
+              to={item.to}
+              activeOptions={item.exact ? { exact: true } : undefined}
+              className="rounded-lg px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 data-[status=active]:bg-indigo-50 data-[status=active]:text-indigo-600 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white dark:data-[status=active]:bg-indigo-950/60 dark:data-[status=active]:text-indigo-400"
+            >
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* Right Tools & Account Menu */}
         <div className="flex items-center gap-3">
           
-          {/* Sign In Button */}
-          <Link
-            to="/sign-in"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-600 transition hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60"
-          >
-            Sign In
-          </Link>
+          {/* Direct Authentication Actions */}
+          {!dbUser && (
+            <Link
+              to="/sign-in"
+              className="rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300"
+            >
+              Sign In
+            </Link>
+          )}
 
           {/* Theme Toggle */}
           <button
@@ -168,11 +178,11 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
                 {(displayName ? displayName.charAt(0) : activeRole.charAt(0)).toUpperCase()}
               </div>
               <div className="hidden text-left sm:block">
-                <div className="text-[11px] font-bold text-slate-900 dark:text-white truncate max-w-[120px]">
-                  {displayName || `${currentRoleInfo?.label || "User"} Mode`}
+                <div className="text-[11px] font-bold text-slate-900 dark:text-white truncate max-w-[140px]">
+                  {displayName || `${currentRoleInfo?.label || "User"}`}
                 </div>
-                <div className="text-[9px] text-slate-400 truncate max-w-[120px]">
-                  {displayEmail || currentRoleInfo?.email || "user@shannova.com"}
+                <div className="text-[9px] text-slate-400 truncate max-w-[140px]">
+                  {displayEmail || "Account Portal"}
                 </div>
               </div>
               <ChevronDown className="size-3.5 text-slate-400" />
@@ -183,10 +193,10 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
               <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900">
                 <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
                   <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                    {displayName || "Connected User"}
+                    {displayName || "Registered User"}
                   </div>
                   <div className="text-[10px] text-slate-400 truncate">
-                    {displayEmail || currentRoleInfo?.email || "user@shannova.com"}
+                    {displayEmail || "Signed In"}
                   </div>
                 </div>
 
@@ -194,7 +204,7 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
                   <div className="px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
                     Switch Active Portal
                   </div>
-                  {roles.map(({ role, label, email, icon: Icon }) => (
+                  {roles.map(({ role, label, icon: Icon }) => (
                     <Link
                       key={role}
                       to={role === "ADMIN" ? "/admin" : role === "INSTRUCTOR" ? "/instructor" : "/student"}
@@ -212,7 +222,6 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
                         <Icon className="size-4" />
                         <div>
                           <div>{label}</div>
-                          <div className="text-[10px] font-normal text-slate-400">{email}</div>
                         </div>
                       </div>
                       {activeRole === role && (

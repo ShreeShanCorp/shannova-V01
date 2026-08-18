@@ -8,6 +8,7 @@ import {
   Mail, 
   Lock, 
   ArrowRight, 
+  ArrowLeft,
   Sparkles, 
   KeyRound, 
   CheckCircle2,
@@ -75,15 +76,17 @@ function SignInPage() {
       });
 
       if (res.data?.data?.token) {
+        localStorage.setItem("shannova_token", res.data.data.token);
         localStorage.setItem("kickstart_token", res.data.data.token);
       }
 
       setActiveRole(preset.role);
       navigate({ to: preset.targetUrl as any });
-    } catch {
-      // Fallback direct login
-      setActiveRole(preset.role);
-      navigate({ to: preset.targetUrl as any });
+    } catch (err: any) {
+      setMessage({
+        type: "error",
+        text: err.response?.data?.error?.message || "Account not found. Please sign up at /sign-up first.",
+      });
     } finally {
       setLoading(false);
     }
@@ -102,6 +105,7 @@ function SignInPage() {
       });
 
       if (res.data?.data?.token) {
+        localStorage.setItem("shannova_token", res.data.data.token);
         localStorage.setItem("kickstart_token", res.data.data.token);
       }
 
@@ -128,9 +132,7 @@ function SignInPage() {
       setOtpSent(true);
       setMessage({
         type: "success",
-        text: res.data?.data?.previewCode
-          ? `OTP Sent! (Dev Preview: ${res.data.data.previewCode})`
-          : "Verification code sent to your email.",
+        text: res.data?.data?.message || "Verification code sent to your email address.",
       });
     } catch (err: any) {
       setMessage({ type: "error", text: err.response?.data?.error?.message || "Failed to send OTP." });
@@ -147,6 +149,7 @@ function SignInPage() {
     try {
       const res = await httpClient.post("/auth/verify-otp", { email, otp: otpCode });
       if (res.data?.data?.token) {
+        localStorage.setItem("shannova_token", res.data.data.token);
         localStorage.setItem("kickstart_token", res.data.data.token);
       }
       setActiveRole(selectedRole);
@@ -166,6 +169,18 @@ function SignInPage() {
 
       <div className="w-full max-w-xl rounded-3xl border border-slate-200/80 bg-white p-8 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900">
         
+        {/* Back Key Link to Landing Page */}
+        <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-700 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-indigo-800 dark:hover:bg-indigo-950/60 dark:hover:text-indigo-400"
+          >
+            <ArrowLeft className="size-3.5" />
+            <span>Back to Landing Page</span>
+          </Link>
+          <span className="text-[11px] font-semibold text-slate-400">Shan Nova Portal</span>
+        </div>
+
         {/* Brand Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2.5">

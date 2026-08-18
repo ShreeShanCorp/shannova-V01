@@ -45,28 +45,18 @@ export async function attachUser(req: Request, _res: Response, next: NextFunctio
       user = await prisma.user.findUnique({ where: { id: requestedUserIdHeader } });
     }
 
+    // Fallback only if no token and no explicit userId is present
     if (!user && requestedRoleHeader && (ROLES as readonly string[]).includes(requestedRoleHeader)) {
       user = await prisma.user.findFirst({ where: { role: requestedRoleHeader } });
     }
 
-    if (!user) {
-      user = await prisma.user.findFirst({ where: { role: (userRole || requestedRoleHeader || "STUDENT") as string } });
+    if (user) {
+      req.user = user;
+      req.role = user.role as Role;
+    } else if (userRole || requestedRoleHeader) {
+      req.role = (userRole || requestedRoleHeader) as Role;
     }
 
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          clerkId: `user_${Date.now()}`,
-          email: "alex@shannova.com",
-          firstName: "Alex",
-          lastName: "Rivera",
-          role: (userRole || requestedRoleHeader || "STUDENT") as Role,
-        },
-      });
-    }
-
-    req.user = user;
-    req.role = user.role as Role;
     next();
   } catch (err) {
     next(err);

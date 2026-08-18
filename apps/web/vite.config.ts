@@ -17,5 +17,18 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    allowedHosts: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:4001",
+        changeOrigin: true,
+        ws: true,
+      },
+      "/socket.io": {
+        target: "http://localhost:4001",
+        changeOrigin: true,
+        ws: true,
+      },
+    },
   },
 });

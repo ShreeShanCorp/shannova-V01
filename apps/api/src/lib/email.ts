@@ -389,3 +389,72 @@ export async function sendNotificationEmail(
   `;
   return sendMail(toEmail, subject, text, html);
 }
+
+/**
+ * 8. Send Class Masterclass & Google Meet Link Invite Email
+ */
+export async function sendClassMeetingEmail(
+  toEmail: string,
+  studentName: string,
+  classTitle: string,
+  description: string,
+  startTime: Date,
+  instructorName: string,
+  meetingUrl: string
+): Promise<boolean> {
+  const formattedTime = startTime.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+
+  const subject = `📅 Live Masterclass Invite: ${classTitle}`;
+  const text = `Hi ${studentName},\n\nYou are invited to a live class: "${classTitle}" hosted by ${instructorName}.\nTime: ${formattedTime}\n\nJoin Google Meet / Live Room: ${meetingUrl}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px;">
+        <div style="max-width: 540px; margin: 0 auto; background: #ffffff; border-radius: 16px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <div style="font-size: 24px; font-weight: 900; color: #4f46e5;">🚀 Shan Nova Masterclass</div>
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">From Campus to Career</div>
+          </div>
+
+          <div style="font-size: 18px; color: #0f172a; font-weight: 800; margin-bottom: 8px;">
+            🎥 Live Session Scheduled
+          </div>
+
+          <div style="font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 20px;">
+            Hi <strong>${studentName}</strong>, instructor <strong>${instructorName}</strong> has scheduled a new live session for your cohort.
+          </div>
+
+          <div style="background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%); border-left: 4px solid #6366f1; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+            <div style="font-size: 16px; font-weight: 800; color: #1e1b4b; margin-bottom: 6px;">${classTitle}</div>
+            ${description ? `<div style="font-size: 13px; color: #475569; margin-bottom: 12px;">${description}</div>` : ""}
+            <div style="font-size: 12px; font-weight: 700; color: #4338ca;">⏰ Start Time: ${formattedTime}</div>
+          </div>
+
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${meetingUrl}" target="_blank" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 14px; font-weight: 800; border-radius: 12px; display: inline-block; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+              🎥 Join Google Meet / Live Room →
+            </a>
+          </div>
+
+          <div style="font-size: 11px; color: #94a3b8; line-height: 1.5; text-align: center;">
+            Meeting Link: <a href="${meetingUrl}" style="color: #6366f1;">${meetingUrl}</a>
+          </div>
+
+          <div style="margin-top: 28px; border-top: 1px solid #f1f5f9; padding-top: 14px; text-align: center; font-size: 11px; color: #94a3b8;">
+            © 2026 Shan Nova LMS • 90-Day Full-Stack Web Development Program
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return sendMail(toEmail, subject, text, html);
+}

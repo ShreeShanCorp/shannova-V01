@@ -35,6 +35,7 @@ function flattenTopics(tree: CurriculumTree | undefined) {
 const scheduleFormSchema = z.object({
   title: z.string().min(1, "Required"),
   description: z.string().optional(),
+  meetingUrl: z.string().optional(),
   topicId: z.string().optional(),
   startTime: z.string().min(1, "Required"),
   endTime: z.string().min(1, "Required"),
@@ -46,7 +47,7 @@ function InstructorClassesPage() {
   const cohorts = cohortsData?.data ?? [];
   const [cohortId, setCohortId] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const activeCohortId = cohortId || cohorts[0]?.id || "";
+  const activeCohortId = cohortId || cohorts[0]?.id || "cohort-pern-90days-id";
 
   const { data: classes, isLoading } = useClasses(activeCohortId);
   const { data: curriculumTree } = useCohortCurriculum(activeCohortId);
@@ -55,7 +56,7 @@ function InstructorClassesPage() {
 
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleFormSchema),
-    defaultValues: { title: "", description: "", topicId: "", startTime: "", endTime: "" },
+    defaultValues: { title: "", description: "", meetingUrl: "", topicId: "", startTime: "", endTime: "" },
   });
 
   return (
@@ -83,7 +84,7 @@ function InstructorClassesPage() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Schedule class</DialogTitle>
+                <DialogTitle>Schedule class & Send Google Meet Link</DialogTitle>
               </DialogHeader>
               <form
                 className="space-y-4"
@@ -93,6 +94,7 @@ function InstructorClassesPage() {
                     topicId: values.topicId || undefined,
                     title: values.title,
                     description: values.description,
+                    meetingUrl: values.meetingUrl || undefined,
                     startTime: new Date(values.startTime),
                     endTime: new Date(values.endTime),
                   });
@@ -102,14 +104,19 @@ function InstructorClassesPage() {
               >
                 <div className="space-y-1.5">
                   <Label htmlFor="title">Title</Label>
-                  <Input id="title" {...form.register("title")} />
+                  <Input id="title" placeholder="e.g. React 19 Architectural Deep Dive" {...form.register("title")} />
                   {form.formState.errors.title && (
                     <p className="text-destructive text-xs">{form.formState.errors.title.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" {...form.register("description")} />
+                  <Textarea id="description" placeholder="Topics covered, prerequisites..." {...form.register("description")} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="meetingUrl">Google Meet / Live Meeting URL (optional)</Label>
+                  <Input id="meetingUrl" placeholder="https://meet.google.com/abc-defg-hij" {...form.register("meetingUrl")} />
+                  <p className="text-muted-foreground text-[11px]">Enrolled students will automatically receive an email invite with this link.</p>
                 </div>
                 {topics.length > 0 && (
                   <div className="space-y-1.5">

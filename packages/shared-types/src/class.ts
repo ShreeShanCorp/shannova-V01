@@ -26,6 +26,7 @@ export const scheduleClassSchema = z.object({
   topicId: z.string().optional(),
   title: z.string().min(1),
   description: z.string().optional(),
+  meetingUrl: z.string().optional(),
   startTime: z.coerce.date(),
   endTime: z.coerce.date(),
 });

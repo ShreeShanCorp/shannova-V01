@@ -9,13 +9,17 @@ export function setApiTokenGetter(fn: TokenGetter) {
   customTokenGetter = fn;
 }
 
+const defaultApiHost = typeof window !== "undefined"
+  ? `${window.location.origin}/api/v1`
+  : "http://localhost:4001/api/v1";
+
 export const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4001/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL || defaultApiHost,
 });
 
 httpClient.interceptors.request.use(async (config) => {
   // 1. Attach JWT token from localStorage or custom getter
-  let token = localStorage.getItem("kickstart_token");
+  let token = localStorage.getItem("shannova_token") || localStorage.getItem("kickstart_token");
   if (!token) {
     token = await customTokenGetter();
   }
