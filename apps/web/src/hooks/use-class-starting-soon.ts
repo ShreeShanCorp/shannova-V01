@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/clerk-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getSocket } from "@/lib/socket-client";
@@ -7,13 +6,13 @@ import { getSocket } from "@/lib/socket-client";
  * the moment the server emits the 5-minutes-before reminder, so the countdown/join UI
  * reflects it immediately instead of waiting for the next poll. */
 export function useClassStartingSoon() {
-  const { getToken, isSignedIn } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    const token = localStorage.getItem("shannova_token") || localStorage.getItem("kickstart_token");
+    if (!token) return;
 
-    const socket = getSocket(getToken);
+    const socket = getSocket(async () => token);
     const onStartingSoon = () => {
       void queryClient.invalidateQueries({ queryKey: ["classes", "upcoming"] });
     };
@@ -22,6 +21,5 @@ export function useClassStartingSoon() {
     return () => {
       socket.off("class:starting_soon", onStartingSoon);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  }, [queryClient]);
 }

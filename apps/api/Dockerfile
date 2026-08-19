@@ -18,6 +18,7 @@ RUN pnpm --filter api run build
 
 FROM base AS runner
 ENV NODE_ENV=production
+ENV PORT=8080
 COPY --from=deps /repo/node_modules /repo/node_modules
 COPY --from=deps /repo/apps/api/node_modules /repo/apps/api/node_modules
 COPY --from=build /repo/packages/shared-types/package.json /repo/packages/shared-types/package.json
@@ -28,5 +29,5 @@ COPY --from=build /repo/apps/api/openapi /repo/apps/api/openapi
 COPY apps/api/package.json /repo/apps/api/package.json
 
 WORKDIR /repo/apps/api
-EXPOSE 4000
+EXPOSE 8080
 CMD ["node", "dist/server.js"]

@@ -102,8 +102,8 @@ export const login = asyncHandler(async (req, res) => {
   // 1. Send Sign-In Email Alert to User
   void sendSignInNotificationEmail(user.email, userName, user.role);
 
-  // 2. If new user or login, notify Admin
-  void sendAdminAlertEmail(isNewUser ? "REGISTRATION" : "SIGN_IN", user.email, userName, user.role);
+  // 2. Notify Admin
+  void sendAdminAlertEmail("SIGN_IN", user.email, userName, user.role);
 
   const token = signJwtToken({
     userId: user.id,

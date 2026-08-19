@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 
 // Reuse the client across tsx watch reloads in dev so we don't exhaust Postgres connections.

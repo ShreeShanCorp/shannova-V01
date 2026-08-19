@@ -18,8 +18,12 @@ export function cohortRoom(cohortId: string): string {
 }
 
 export function initSocket(httpServer: HttpServer): Server {
+  const allowedOrigins = env.CORS_ORIGIN.includes(",")
+    ? env.CORS_ORIGIN.split(",").map((s) => s.trim())
+    : env.CORS_ORIGIN || true;
+
   const io = new Server(httpServer, {
-    cors: { origin: env.CORS_ORIGIN, credentials: true },
+    cors: { origin: allowedOrigins, credentials: true },
   });
   ioInstance = io;
 
