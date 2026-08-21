@@ -198,6 +198,45 @@ function SignInPage() {
           </p>
         </div>
 
+        {/* Demo Credentials Quick Guide Box */}
+        <div className="mt-5 rounded-2xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50/80 via-purple-50/50 to-indigo-50/80 p-3.5 dark:border-indigo-900/50 dark:bg-slate-800/80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold text-indigo-900 dark:text-indigo-200">
+              <Sparkles className="size-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Demo Test Access Credentials</span>
+            </div>
+            <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[10px] font-extrabold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+              Password: password123
+            </span>
+          </div>
+          <div className="mt-2.5 grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => handleRolePresetLogin(presets[0])}
+              className="flex flex-col items-center justify-center rounded-xl border border-indigo-200/60 bg-white p-2 text-center shadow-sm transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            >
+              <span className="text-[11px] font-black text-indigo-600 dark:text-indigo-400">🎓 Student</span>
+              <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">student@shannova.com</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRolePresetLogin(presets[1])}
+              className="flex flex-col items-center justify-center rounded-xl border border-purple-200/60 bg-white p-2 text-center shadow-sm transition hover:border-purple-400 hover:bg-purple-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            >
+              <span className="text-[11px] font-black text-purple-600 dark:text-purple-400">👨‍🏫 Instructor</span>
+              <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">instructor@shannova.com</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRolePresetLogin(presets[2])}
+              className="flex flex-col items-center justify-center rounded-xl border border-amber-200/60 bg-white p-2 text-center shadow-sm transition hover:border-amber-400 hover:bg-amber-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            >
+              <span className="text-[11px] font-black text-amber-600 dark:text-amber-400">🛡️ Admin</span>
+              <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">admin@shannova.com</span>
+            </button>
+          </div>
+        </div>
+
         {/* Tab Switcher */}
         <div className="mt-6 flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <button

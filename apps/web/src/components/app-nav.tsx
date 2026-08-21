@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { useState, useRef, useEffect } from "react";
 import { useUiStore } from "@/stores/ui-store";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { httpClient } from "@/lib/api-client";
 import type { Role } from "@/types/api";
 import { 
   Rocket, 
@@ -93,6 +94,22 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
   } else if (items && items.length > 0) {
     roleNav = items;
   }
+
+  const handleSwitchPortal = async (role: Role, email: string, targetUrl: string) => {
+    setDropdownOpen(false);
+    try {
+      const res = await httpClient.post("/auth/login", { email, role });
+      if (res.data?.data?.token) {
+        localStorage.setItem("shannova_token", res.data.data.token);
+        localStorage.setItem("kickstart_token", res.data.data.token);
+      }
+    } catch {
+      // ignore network errors
+    } finally {
+      setActiveRole(role);
+      navigate({ to: targetUrl as any });
+    }
+  };
 
   const handleSignOut = () => {
     localStorage.removeItem("shannova_token");
@@ -202,33 +219,34 @@ export function AppNav({ items }: { items?: AppNavItem[] }) {
 
                 <div className="mt-1 space-y-1">
                   <div className="px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                    Switch Active Portal
+                    Switch Active Portal (Demo Access)
                   </div>
-                  {roles.map(({ role, label, icon: Icon }) => (
-                    <Link
-                      key={role}
-                      to={role === "ADMIN" ? "/admin" : role === "INSTRUCTOR" ? "/instructor" : "/student"}
-                      onClick={() => {
-                        setActiveRole(role);
-                        setDropdownOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition ${
-                        activeRole === role
-                          ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Icon className="size-4" />
-                        <div>
-                          <div>{label}</div>
+                  {roles.map(({ role, label, email, icon: Icon }) => {
+                    const targetUrl = role === "ADMIN" ? "/admin" : role === "INSTRUCTOR" ? "/instructor" : "/student";
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => handleSwitchPortal(role, email, targetUrl)}
+                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                          activeRole === role
+                            ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <Icon className="size-4" />
+                          <div className="text-left">
+                            <div>{label}</div>
+                            <div className="text-[9px] font-normal text-slate-400">{email}</div>
+                          </div>
                         </div>
-                      </div>
-                      {activeRole === role && (
-                        <span className="size-1.5 rounded-full bg-indigo-600" />
-                      )}
-                    </Link>
-                  ))}
+                        {activeRole === role && (
+                          <span className="size-1.5 rounded-full bg-indigo-600" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <div className="mt-2 border-t border-slate-100 pt-1 dark:border-slate-800">

@@ -45,3 +45,10 @@ async function shutdown() {
 
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
+// Cloud Run Job mode: a scheduler triggers this job periodically, so it drains
+// whatever's queued for a bounded window and exits, rather than listening forever
+// like the always-on docker-compose deployment.
+if (env.WORKER_ONESHOT) {
+  setTimeout(shutdown, env.WORKER_RUN_DURATION_MS);
+}

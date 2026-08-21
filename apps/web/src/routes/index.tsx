@@ -1,5 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useUiStore } from "@/stores/ui-store";
+import { httpClient } from "@/lib/api-client";
+import type { Role } from "@/types/api";
 import { 
   Rocket, 
   Play, 
@@ -15,6 +18,7 @@ import {
   Bot, 
   Check, 
   ShieldCheck, 
+  UserCheck,
   Send, 
   Code2, 
   BookOpen,
@@ -33,7 +37,8 @@ import {
   Laptop,
   MessageSquare,
   HelpCircle,
-  ChevronDown
+  ChevronDown,
+  KeyRound
 } from "lucide-react";
 import { AppNav } from "@/components/app-nav";
 
@@ -42,12 +47,34 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const navigate = useNavigate();
+  const { setActiveRole } = useUiStore();
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+
   const [activeHeroTab, setActiveHeroTab] = useState<"curriculum" | "code" | "mcq">("curriculum");
   const [activePortalTab, setActivePortalTab] = useState<"student" | "instructor" | "admin">("student");
   const [codeAnswer, setCodeAnswer] = useState('const greet = (name: string): string => `Hello, ${name}!`;');
   const [codeTested, setCodeTested] = useState(false);
   const [mcqSelected, setMcqSelected] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const handleDemoLogin = async (role: Role, email: string, targetUrl: string) => {
+    setDemoLoading(role);
+    try {
+      const res = await httpClient.post("/auth/login", { email, role });
+      if (res.data?.data?.token) {
+        localStorage.setItem("shannova_token", res.data.data.token);
+        localStorage.setItem("kickstart_token", res.data.data.token);
+      }
+      setActiveRole(role);
+      navigate({ to: targetUrl as any });
+    } catch {
+      setActiveRole(role);
+      navigate({ to: targetUrl as any });
+    } finally {
+      setDemoLoading(null);
+    }
+  };
 
   const handleRunCode = () => {
     setCodeTested(true);
@@ -122,6 +149,65 @@ function LandingPage() {
                   <UserPlus className="size-4" />
                   Register
                 </Link>
+              </div>
+
+              {/* Quick Demo Test Access Card */}
+              <div className="mt-6 w-full max-w-xl rounded-2xl border border-indigo-200/80 bg-white/80 p-3.5 shadow-md backdrop-blur-xl dark:border-indigo-900/50 dark:bg-slate-900/80">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white">
+                    <Sparkles className="size-4 text-indigo-600 dark:text-indigo-400" />
+                    <span>⚡ Quick Demo Test Access (1-Click Login)</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                    Password: <code className="font-mono font-bold text-indigo-600 dark:text-indigo-400">password123</code>
+                  </span>
+                </div>
+                <div className="mt-2.5 grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDemoLogin("STUDENT", "student@shannova.com", "/student")}
+                    disabled={demoLoading === "STUDENT"}
+                    className="group flex flex-col items-center justify-center rounded-xl border border-indigo-200/60 bg-slate-50/80 p-2.5 text-center transition hover:border-indigo-500 hover:bg-indigo-50 dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/40"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                      <GraduationCap className="size-3.5" />
+                      <span>Student</span>
+                    </div>
+                    <span className="mt-0.5 max-w-full truncate text-[9px] text-slate-500 dark:text-slate-400">
+                      student@shannova.com
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDemoLogin("INSTRUCTOR", "instructor@shannova.com", "/instructor")}
+                    disabled={demoLoading === "INSTRUCTOR"}
+                    className="group flex flex-col items-center justify-center rounded-xl border border-purple-200/60 bg-slate-50/80 p-2.5 text-center transition hover:border-purple-500 hover:bg-purple-50 dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-purple-500 dark:hover:bg-purple-950/40"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400">
+                      <UserCheck className="size-3.5" />
+                      <span>Instructor</span>
+                    </div>
+                    <span className="mt-0.5 max-w-full truncate text-[9px] text-slate-500 dark:text-slate-400">
+                      instructor@shannova.com
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDemoLogin("ADMIN", "admin@shannova.com", "/admin")}
+                    disabled={demoLoading === "ADMIN"}
+                    className="group flex flex-col items-center justify-center rounded-xl border border-amber-200/60 bg-slate-50/80 p-2.5 text-center transition hover:border-amber-500 hover:bg-amber-50 dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-amber-500 dark:hover:bg-amber-950/40"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                      <ShieldCheck className="size-3.5" />
+                      <span>Admin</span>
+                    </div>
+                    <span className="mt-0.5 max-w-full truncate text-[9px] text-slate-500 dark:text-slate-400">
+                      admin@shannova.com
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* Social Proof & Metrics */}

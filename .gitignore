@@ -3,6 +3,7 @@ dist/
 build/
 .env
 .env.local
+.env.production
 *.local
 .DS_Store
 coverage/

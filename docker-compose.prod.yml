@@ -1,0 +1,55 @@
+name: shannova-prod
+
+# Production compose file for a single EC2 host.
+# Postgres and Redis are NOT run here — they point at RDS and ElastiCache
+# via DATABASE_URL / REDIS_URL in apps/api/.env.production (see apps/api/.env.production.example).
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_ENV: production
+    volumes:
+      - meili_data:/meili_data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env.production
+    environment:
+      MEILI_HOST: http://meilisearch:7700
+    depends_on:
+      - meilisearch
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env.production
+    environment:
+      MEILI_HOST: http://meilisearch:7700
+    depends_on:
+      - meilisearch
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+        VITE_SOCKET_URL: ""
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    depends_on:
+      - api
+
+volumes:
+  meili_data:

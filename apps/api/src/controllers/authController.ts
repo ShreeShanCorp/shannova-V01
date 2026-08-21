@@ -90,11 +90,41 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email } = loginSchema.parse(req.body);
+  const { email, role } = loginSchema.parse(req.body);
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  let user = await prisma.user.findUnique({ where: { email } });
+  
+  // Auto-seed/create demo accounts if missing for quick 1-click test access
   if (!user) {
-    throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
+    const demoDefaults: Record<string, { firstName: string; lastName: string; role: "STUDENT" | "INSTRUCTOR" | "ADMIN" }> = {
+      "student@shannova.com": { firstName: "Alex", lastName: "Rivera", role: "STUDENT" },
+      "instructor@shannova.com": { firstName: "Sarah", lastName: "Jenkins", role: "INSTRUCTOR" },
+      "admin@shannova.com": { firstName: "David", lastName: "Chen", role: "ADMIN" },
+    };
+
+    const demoInfo = demoDefaults[email.toLowerCase()];
+    if (demoInfo) {
+      user = await prisma.user.create({
+        data: {
+          clerkId: `demo_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+          email: email.toLowerCase(),
+          firstName: demoInfo.firstName,
+          lastName: demoInfo.lastName,
+          role: (role as any) || demoInfo.role,
+        },
+      });
+
+      const activeCohort = await prisma.cohort.findFirst({ where: { status: "ACTIVE" } }) || await prisma.cohort.findFirst();
+      if (activeCohort) {
+        await prisma.enrollment.upsert({
+          where: { userId_cohortId: { userId: user.id, cohortId: activeCohort.id } },
+          create: { userId: user.id, cohortId: activeCohort.id, role: user.role },
+          update: {},
+        });
+      }
+    } else {
+      throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
+    }
   }
 
   const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Learner";
@@ -118,9 +148,27 @@ export const login = asyncHandler(async (req, res) => {
 export const sendOtp = asyncHandler(async (req, res) => {
   const { email } = sendOtpSchema.parse(req.body);
 
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  let existingUser = await prisma.user.findUnique({ where: { email } });
   if (!existingUser) {
-    throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
+    const demoDefaults: Record<string, { firstName: string; lastName: string; role: "STUDENT" | "INSTRUCTOR" | "ADMIN" }> = {
+      "student@shannova.com": { firstName: "Alex", lastName: "Rivera", role: "STUDENT" },
+      "instructor@shannova.com": { firstName: "Sarah", lastName: "Jenkins", role: "INSTRUCTOR" },
+      "admin@shannova.com": { firstName: "David", lastName: "Chen", role: "ADMIN" },
+    };
+    const demoInfo = demoDefaults[email.toLowerCase()];
+    if (demoInfo) {
+      existingUser = await prisma.user.create({
+        data: {
+          clerkId: `demo_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+          email: email.toLowerCase(),
+          firstName: demoInfo.firstName,
+          lastName: demoInfo.lastName,
+          role: demoInfo.role,
+        },
+      });
+    } else {
+      throw ApiError.notFound("Account not found with this email. Please sign up at /sign-up first.");
+    }
   }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
